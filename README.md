@@ -35,15 +35,15 @@ be completed:
 
 - Make sure to place the plugin configuration into the `plugins` volume. Please consult the
   [official website][emqttd-config] about the list of supported plugins.
-- Provide the `plugins.list` file through the `config` volume. This file should contain list of all
+- Provide the `plugins.load` file through the `config` volume. This file should contain list of all
   plugins to be loaded, with each plugin name given in separate line.
 
-For example, to load `emq_auth_http` and `emq_auth_mysql` plugins, the `plugins.list` file
+For example, to load `emq_auth_http` and `emq_auth_mysql` plugins, the `plugins.load` file
 would have the following contents:
 
 ```
-emq_auth_http
-emq_auth_mysql
+emq_auth_http.
+emq_auth_mysql.
 ```
 
 Once the setup is completed, execute the following command:
