@@ -12,29 +12,25 @@ _copy_config() {
     fi
 }
 
-_load_plugins() {
-    PLUGINS_LIST=$EMQTTD_DIR/etc/plugins.list
+_configure_plugins() {
+    # copy autoload list if provided
+    PLUGINS_LIST=$EMQTTD_DIR/etc/plugins.load
     if [ -f $PLUGINS_LIST ]; then
-        # wait for daemon to start
-        sleep 5
+        cp $PLUGINS_LIST $EMQTTD_DIR/data/loaded_plugins
+    fi
 
-        PLUGINS_VOLUME=/etc/emqttd/plugins
-        if [ "$(ls -A $PLUGINS_VOLUME)" ]; then
-            cp -ur $PLUGINS_VOLUME/* $EMQTTD_DIR/etc/plugins
-        fi
-
-        while IFS= read -r plugin; do
-            echo "Loading $plugin..."
-            emqttd_ctl plugins load $plugin &
-        done < $PLUGINS_LIST
+    # copy custom plugin configuration if provided
+    PLUGINS_VOLUME=/etc/emqttd/plugins
+    if [ "$(ls -A $PLUGINS_VOLUME)" ]; then
+        cp -ur $PLUGINS_VOLUME/* $EMQTTD_DIR/etc/plugins
     fi
 }
 
 if [ "$1" = 'emqttd' -a "$(id -u)" = '0' ]; then
     _copy_config
-    _load_plugins &
+    _configure_plugins
 
-    chown -R emqttd .
+    chown -R emqttd:emqttd .
     exec gosu emqttd "$0" "$@"
 fi
 
